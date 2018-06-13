@@ -5,6 +5,7 @@ import com.cenobitor.sell.dto.OrderDTO;
 import com.cenobitor.sell.enums.OrderStatusEnum;
 import com.cenobitor.sell.enums.PayStatusEnum;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.error.ShouldBe;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -96,5 +97,12 @@ public class OrderServiceImplTest {
         OrderDTO result = orderService.findOne(ORDER_ID);
         OrderDTO paid = orderService.paid(result);
         Assert.assertEquals(PayStatusEnum.SUCCESS.getCode(),paid.getPayStatus());
+    }
+
+    @Test
+    public void findAll() {
+        PageRequest request = new PageRequest(0, 2);
+        Page<OrderDTO> orderDTOPage = orderService.findList(request);
+        Assert.assertNotEquals(0, orderDTOPage.getTotalElements());
     }
 }

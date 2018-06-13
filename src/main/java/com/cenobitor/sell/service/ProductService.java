@@ -1,6 +1,5 @@
 package com.cenobitor.sell.service;
 
-import com.cenobitor.sell.dataobject.ProductCategory;
 import com.cenobitor.sell.dataobject.ProductInfo;
 import com.cenobitor.sell.dto.CartDTO;
 import org.springframework.data.domain.Page;
@@ -33,4 +32,11 @@ public interface ProductService {
 
     //减库存
     void decreaseStock(List<CartDTO> cartDTOList);
+
+    //上架
+    ProductInfo onSale(String productId);
+
+    //下架
+    ProductInfo offSale(String productId);
+
 }

@@ -1,10 +1,16 @@
 package com.cenobitor.sell.dataobject;
 
+import com.cenobitor.sell.enums.ProductStatusEnum;
+import com.cenobitor.sell.utils.EnumUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * @Author: Cenobitor
@@ -14,7 +20,10 @@ import java.math.BigDecimal;
  */
 @Entity
 @Data
-public class ProductInfo {
+@DynamicUpdate
+public class ProductInfo implements Serializable{
+
+    private static final long serialVersionUID = 1086710810021537007L;
 
     @Id
     private String productId;
@@ -47,11 +56,20 @@ public class ProductInfo {
     /**
      * 状态,0正常1下架
      */
-    private Integer productStatus;
+    private Integer productStatus = ProductStatusEnum.UP.getCode();;
 
     /**
      * 类目编号
      */
     private Integer categoryType;
+
+    private Date createTime;
+
+    private Date updateTime;
+
+    @JsonIgnore
+    public ProductStatusEnum getProductStatusEnum(){
+        return EnumUtil.getByCode(productStatus,ProductStatusEnum.class);
+    }
 
 }

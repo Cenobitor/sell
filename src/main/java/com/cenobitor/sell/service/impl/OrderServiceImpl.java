@@ -12,8 +12,7 @@ import com.cenobitor.sell.enums.ResultEnum;
 import com.cenobitor.sell.exception.SellException;
 import com.cenobitor.sell.repository.OrderDetailRepository;
 import com.cenobitor.sell.repository.OrderMasterRepository;
-import com.cenobitor.sell.service.OrderService;
-import com.cenobitor.sell.service.ProductService;
+import com.cenobitor.sell.service.*;
 import com.cenobitor.sell.utils.KeyUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -48,6 +47,15 @@ public class OrderServiceImpl implements OrderService {
     private OrderDetailRepository orderDetailRepository;
     @Autowired
     private OrderMasterRepository orderMasterRepository;
+
+    @Autowired
+    private PayService payService;
+
+    @Autowired
+    private PushMessageService pushMessageService;
+
+    @Autowired
+    private WebSocket webSocket;
 
     @Override
     @Transactional
@@ -84,12 +92,14 @@ public class OrderServiceImpl implements OrderService {
         orderMasterRepository.save(orderMaster);
 
         //4.扣库存
-
         List<CartDTO> cartDTOList = orderDTO.getOrderDetailList().stream()
                 .map(e -> new CartDTO(e.getProductId(), e.getProductQuantity()))
                 .collect(Collectors.toList());
 
         productService.decreaseStock(cartDTOList);
+
+        //发送websocket消息
+        webSocket.sendMessage(orderDTO.getOrderId());
 
         return orderDTO;
     }
@@ -155,7 +165,7 @@ public class OrderServiceImpl implements OrderService {
         productService.increaseStock(cartDTOList);
         //如果已支付,需要退款
         if (orderDTO.getPayStatus().equals(PayStatusEnum.SUCCESS)){
-            //TODO
+            payService.refund(orderDTO);
         }
         return orderDTO;
     }
@@ -178,6 +188,9 @@ public class OrderServiceImpl implements OrderService {
             log.error("[完结订单] 更新失败,orderMaster={}",orderMaster);
             throw new SellException(ResultEnum.ORDER_UPDATE_FAIL);
         }
+        //推送模板消息
+        pushMessageService.orderStatus(orderDTO);
+
         return orderDTO;
     }
 
@@ -207,5 +220,14 @@ public class OrderServiceImpl implements OrderService {
         }
 
         return orderDTO;
+    }
+
+    @Override
+    public Page<OrderDTO> findList(Pageable pageable) {
+        Page<OrderMaster> orderMasterPage = orderMasterRepository.findAll(pageable);
+        List<OrderDTO> orderDTOList = OrderMaster2OrderDTOConverter
+                .convert(orderMasterPage.getContent());
+
+        return new PageImpl<OrderDTO>(orderDTOList,pageable,orderMasterPage.getTotalElements());
     }
 }

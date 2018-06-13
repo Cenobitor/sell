@@ -10,6 +10,7 @@ import com.cenobitor.sell.vo.ProductVO;
 import com.cenobitor.sell.vo.ResultVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,6 +37,7 @@ public class BuyerProductController {
 
 
     @GetMapping("/list")
+    @Cacheable(cacheNames = "product",key = "123")
     public ResultVO list() {
         //1.查询所有的上架商品
         List<ProductInfo> productInfoList = productService.findUpAll();
@@ -44,10 +46,10 @@ public class BuyerProductController {
                 .map(e -> e.getCategoryType())
                 .collect(Collectors.toList());
 
-        List<ProductCategory> prodcutCategoryList = categoryService.findByCategoryTypeIn(categoryTypeList);
+        List<ProductCategory> productCategoryList = categoryService.findByCategoryTypeIn(categoryTypeList);
         //3.数据拼装
         List<ProductVO> productVOList = new ArrayList<>();
-        for (ProductCategory productCategory : prodcutCategoryList) {
+        for (ProductCategory productCategory : productCategoryList) {
             ProductVO productVO = new ProductVO();
             productVO.setCategoryType(productCategory.getCategoryType());
             productVO.setCategoryName(productCategory.getCategoryName());

@@ -2,6 +2,7 @@ package com.cenobitor.sell.repository;
 
 import com.cenobitor.sell.dataobject.ProductInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -13,5 +14,6 @@ import java.util.List;
  */
 public interface ProductInfoRepository  extends JpaRepository<ProductInfo,String>{
 
+    @Query
     List<ProductInfo> findByProductStatus(Integer productStatus);
 }

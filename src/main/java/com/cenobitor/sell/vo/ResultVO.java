@@ -2,6 +2,8 @@ package com.cenobitor.sell.vo;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * http请求返回的最外层对象
  * @Author: Cenobitor
@@ -10,7 +12,9 @@ import lombok.Data;
  * @Modified By:
  */
 @Data
-public class ResultVO<T> {
+public class ResultVO<T> implements Serializable{
+
+    private static final long serialVersionUID = 8960474786737581150L;
 
     /**
      * 错误码

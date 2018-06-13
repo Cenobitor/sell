@@ -3,15 +3,13 @@ package com.cenobitor.sell.dto;
 import com.cenobitor.sell.dataobject.OrderDetail;
 import com.cenobitor.sell.enums.OrderStatusEnum;
 import com.cenobitor.sell.enums.PayStatusEnum;
+import com.cenobitor.sell.utils.EnumUtil;
 import com.cenobitor.sell.utils.serializer.Date2LongSerializer;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 
-import javax.persistence.Id;
-import javax.persistence.Transient;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -60,4 +58,13 @@ public class OrderDTO {
 
     private List<OrderDetail> orderDetailList;
 
+    @JsonIgnore
+    public OrderStatusEnum getOrderStatusEnum(){
+        return EnumUtil.getByCode(orderStatus,OrderStatusEnum.class);
+    }
+
+    @JsonIgnore
+    public PayStatusEnum getPayStatusEnum(){
+        return EnumUtil.getByCode(payStatus,PayStatusEnum.class);
+    }
 }

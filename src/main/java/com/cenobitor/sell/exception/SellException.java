@@ -1,6 +1,7 @@
 package com.cenobitor.sell.exception;
 
 import com.cenobitor.sell.enums.ResultEnum;
+import lombok.Getter;
 
 /**
  * @Author: Cenobitor
@@ -8,6 +9,7 @@ import com.cenobitor.sell.enums.ResultEnum;
  * @Date: Created in 2:54 PM 2018/4/14
  * @Modified By:
  */
+@Getter
 public class SellException extends RuntimeException {
 
     private Integer code;
